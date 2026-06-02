@@ -49,57 +49,9 @@ body::before {
   z-index: 0;
 }
 
-/* ── الحاوية الرئيسية ── */
-.app-container {
-  position: relative;
-  z-index: 1;
-  min-height: 100vh;
-}
 
-/* ── الشريط العلوي ── */
-.navbar {
-  background: var(--cobalt);
-  border-bottom: 3px solid var(--gold);
-  padding: 0 1.5rem;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
 
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-family: 'Scheherazade New', serif;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--gold-light);
-  letter-spacing: 0.02em;
-}
 
-.navbar-brand .brand-icon {
-  font-size: 1.8rem;
-}
-
-.navbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.navbar-user {
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.7);
-  background: rgba(255,255,255,0.1);
-  padding: 0.3rem 0.75rem;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.15);
-}
 
 /* ── الأزرار ── */
 .btn {
@@ -237,157 +189,15 @@ body::before {
   box-shadow: 0 0 0 3px rgba(184,134,11,0.15);
 }
 
-/* ── صفحة تسجيل الدخول ── */
-.auth-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
 
-.auth-card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 2.5rem;
-  box-shadow: 0 8px 40px var(--shadow-deep);
-  position: relative;
-  overflow: hidden;
-}
 
-.auth-card::before {
-  content: '';
-  position: absolute;
-  top: 0; right: 0; left: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--cobalt), var(--gold), var(--terracotta));
-}
 
-.auth-logo {
-  text-align: center;
-  margin-bottom: 2rem;
-}
 
-.auth-logo h1 {
-  font-family: 'Scheherazade New', serif;
-  font-size: 2rem;
-  color: var(--cobalt);
-  margin-bottom: 0.25rem;
-}
 
-.auth-logo p {
-  font-size: 0.85rem;
-  color: var(--ink);
-  opacity: 0.6;
-}
 
-.auth-tabs {
-  display: flex;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid var(--border-light);
-  margin-bottom: 1.5rem;
-}
 
-.auth-tab {
-  flex: 1;
-  padding: 0.6rem;
-  font-family: 'Cairo', sans-serif;
-  font-weight: 600;
-  font-size: 0.875rem;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: transparent;
-  color: var(--ink);
-  opacity: 0.6;
-}
 
-.auth-tab.active {
-  background: var(--cobalt);
-  color: white;
-  opacity: 1;
-}
 
-.auth-error {
-  background: #fef2f2;
-  border: 1px solid #fca5a5;
-  color: var(--terracotta);
-  padding: 0.6rem 0.9rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-/* ── الصفحة الرئيسية ── */
-.main-layout {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1.5rem;
-}
-
-/* ── شريط البحث ── */
-.search-bar {
-  position: relative;
-  margin-bottom: 1.5rem;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.75rem 1rem 0.75rem 3rem;
-  font-family: 'Cairo', sans-serif;
-  font-size: 0.95rem;
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  background: white;
-  color: var(--ink);
-  outline: none;
-  direction: rtl;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.search-input:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 4px rgba(184,134,11,0.12);
-}
-
-.search-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--gold);
-  font-size: 1.1rem;
-  pointer-events: none;
-}
-
-.search-results {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  left: 0;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 8px 30px var(--shadow-deep);
-  z-index: 50;
-  max-height: 320px;
-  overflow-y: auto;
-}
-
-.search-result-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  transition: background 0.15s;
-  border-bottom: 1px solid var(--parchment);
-}
 
 .search-result-item:last-child { border-bottom: none; }
 .search-result-item:hover { background: var(--gold-pale); }
@@ -411,65 +221,6 @@ body::before {
   gap: 1.25rem;
 }
 
-.family-card {
-  background: var(--cream);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  padding: 1.25rem;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 2px 10px var(--shadow);
-  position: relative;
-  overflow: hidden;
-}
-
-.family-card::before {
-  content: '';
-  position: absolute;
-  top: 0; right: 0; left: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--cobalt), var(--gold-light));
-}
-
-.family-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px var(--shadow-deep);
-  border-color: var(--gold);
-}
-
-.family-card-head {
-  font-family: 'Scheherazade New', serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--cobalt);
-  margin-bottom: 0.5rem;
-}
-
-.family-card-stats {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.8rem;
-  color: var(--ink);
-  opacity: 0.65;
-}
-
-.family-card-stat {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.family-card-icon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--cobalt), var(--cobalt-light));
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  margin-bottom: 0.75rem;
-}
 
 /* ── بطاقة عائلة مفصلة ── */
 .family-detail {
@@ -719,42 +470,11 @@ body::before {
 }
 .breadcrumb-btn:hover { background: var(--cobalt-light); }
 
-/* ── حالة فارغة ── */
-.empty-state {
-  text-align: center;
-  padding: 3rem 2rem;
-  color: var(--ink);
-  opacity: 0.5;
-}
 
-.empty-state-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
 
-.empty-state p {
-  font-size: 0.9rem;
-}
 
-/* ── التحميل ── */
-.loading-spinner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem;
-  gap: 1rem;
-  color: var(--gold);
-}
 
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border-light);
-  border-top-color: var(--gold);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
+
 
 @keyframes spin { to { transform: rotate(360deg); } }
 

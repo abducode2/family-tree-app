@@ -9,8 +9,9 @@ import { usePage } from '@/hooks/useFamily';
 import { ToastProvider, useToast } from '@/components/Toast';
 import PersonPageView from '@/components/PersonPageView';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import "@/styles/HomePage.css"
 
-function HomeInner() {
+export default function HomePage() {
   const { user, logout } = useAuth();
   const { showToast } = useToast();
   const { current, navigate, goBack, goHome, canGoBack } = useNavigationHistory();
@@ -99,13 +100,11 @@ function HomeInner() {
       {/* ── شريط التنقل ── */}
       <nav className="navbar">
         <div className="navbar-brand">
-          <span className="brand-icon">🌳</span>
           <span>شجرة العائلة</span>
         </div>
         <div className="navbar-actions">
           <span className="navbar-user">{user?.email}</span>
           <button className="btn btn-sm btn-ghost"
-            style={{ color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.2)' }}
             onClick={() => setConfirmLogout(true)}>
             خروج
           </button>
@@ -115,7 +114,7 @@ function HomeInner() {
       <div className="main-layout">
 
         {/* ── بحث عام (دائم الظهور) ── */}
-        <div className="search-bar" ref={searchRef} style={{ marginBottom: '1.5rem' }}>
+        <div className="search-bar" ref={searchRef} >
           <span className="search-icon">🔍</span>
           <input
             className="search-input"
@@ -135,11 +134,11 @@ function HomeInner() {
                 }).map((r, i) => (
                   <div key={i} className="search-result-item"
                     onClick={() => { navigate(r.pageId); setShowSearch(false); setSearchQ(''); }}>
-                    <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{r.name}</div>
+                    <div className='search-result-title'>{r.name}</div>
                   </div>
                 ));
               })() : (
-                <div style={{ padding: '1rem', textAlign: 'center', opacity: 0.5, fontSize: '0.875rem' }}>
+                <div className='search-no-result'>
                   لا توجد نتائج
                 </div>
               )}
@@ -151,7 +150,9 @@ function HomeInner() {
         {current ? (
           /* صفحة شخص */
           pageLoading ? (
-            <div className="loading-spinner"><div className="spinner" /></div>
+            <div className="loading-spinner">
+              <div className="spinner" />
+              </div>
           ) : page ? (
             <PersonPageView
               page={page}
@@ -167,9 +168,9 @@ function HomeInner() {
             />
           ) : (
             <div className="empty-state">
-              <div className="empty-state-icon">😕</div>
+              <div className="empty-state-icon"></div>
               <p>تعذّر تحميل الصفحة</p>
-              <button className="btn btn-ghost" onClick={goHome} style={{ marginTop: '1rem' }}>
+              <button className="btn btn-ghost" onClick={goHome} >
                 الرئيسية
               </button>
             </div>
@@ -178,46 +179,31 @@ function HomeInner() {
           /* ── الصفحة الرئيسية: قائمة الأجداد ── */
           <>
             {/* رأس القسم */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.1rem' }}>
-              <h2 style={{ fontFamily: 'Scheherazade New, serif', fontSize: '1.6rem', color: 'var(--cobalt)' }}>
+            <div className='header-container'>
+              <h2 >
                 الأجداد
                 {rootPages.length > 0 && (
-                  <span style={{ fontSize: '0.85rem', fontFamily: 'Cairo, sans-serif',
-                    marginRight: '0.5rem', background: 'var(--gold-pale)',
-                    border: '1px solid var(--gold)', color: 'var(--gold)',
-                    padding: '0.15rem 0.6rem', borderRadius: '20px', fontWeight: 700 }}>
+                  <span >
                     {rootPages.length}
                   </span>
                 )}
               </h2>
-              <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
+              <button className="btn btn-primary" 
+              onClick={() => setShowAddModal(true)}>
                 + إضافة جد
               </button>
             </div>
 
-            {/* خانة فلترة الأجداد */}
-            {rootPages.length > 0 && (
-              <div style={{ position: 'relative', marginBottom: '1.25rem' }}>
-                <span style={{ position: 'absolute', right: '0.9rem', top: '50%',
-                  transform: 'translateY(-50%)', fontSize: '1rem', pointerEvents: 'none', opacity: 0.45 }}>
-                  🔎
-                </span>
-                <input
-                  className="form-input"
-                  style={{ paddingRight: '2.4rem', background: 'white' }}
-                  placeholder="ابحث باسم الجد..."
-                  value={filterQ}
-                  onChange={e => setFilterQ(e.target.value)}
-                />
-              </div>
-            )}
 
             {/* القائمة */}
             {loadingList ? (
-              <div className="loading-spinner"><div className="spinner" /><span>جاري التحميل...</span></div>
+              <div className="loading-spinner">
+                <div className="spinner" />
+                <span>جاري التحميل...</span>
+                </div>
             ) : rootPages.length === 0 ? (
-              <div className="empty-state" style={{ marginTop: '3rem' }}>
-                <div className="empty-state-icon">🌳</div>
+              <div className="empty-state" >
+               
                 <p style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>لا يوجد أجداد بعد</p>
                 <p style={{ opacity: 0.6, marginBottom: '1.5rem' }}>ابدأ ببناء شجرة عائلتك</p>
                 <button className="btn btn-primary btn-lg" onClick={() => setShowAddModal(true)}>
@@ -235,21 +221,17 @@ function HomeInner() {
                 {filteredRoots.map(r => (
                   <div key={r.id} className="family-card" onClick={() => navigate(r.id)}>
                     {/* حرف أبجدي كبير */}
-                    <div style={{
-                      width: 48, height: 48, borderRadius: 12, marginBottom: '0.75rem',
-                      background: 'linear-gradient(135deg, var(--cobalt), var(--cobalt-light))',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: 'Scheherazade New, serif', fontSize: '1.5rem',
-                      color: 'white', fontWeight: 700,
-                    }}>
+                    <div className='family-charat'>
                       {r.name.charAt(0)}
+                      
+                        
                     </div>
                     <div className="family-card-head">{r.name}</div>
-                    <div className="family-card-stats">
+                    {/* <div className="family-card-stats">
                       <span className="family-card-stat"> {(r.wives ?? []).length}</span>
                       <span className="family-card-stat"> {(r.children ?? []).filter(c => c.gender === 'male').length}</span>
                       <span className="family-card-stat"> {(r.children ?? []).filter(c => c.gender === 'female').length}</span>
-                    </div>
+                    </div> */}
                   </div>
                 ))}
               </div>
@@ -263,16 +245,16 @@ function HomeInner() {
         <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
           <div className="modal" style={{ maxWidth: 380 }} onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <span className="modal-title">إضافة جد</span>
+              <span className="modal-title">إضافة جد غير مضاف</span>
               <button className="modal-close" onClick={() => setShowAddModal(false)}>✕</button>
             </div>
             <div className="form-group">
-              <label className="form-label">اسم الجد *</label>
+              <label className="form-label">اسم الجد كامل *</label>
               <input
                 className="form-input"
                 value={grandName}
                 onChange={e => setGrandName(e.target.value)}
-                placeholder="أدخل اسم الجد"
+                placeholder="أدخل اسم الجد كامل ..."
                 autoFocus
                 onKeyDown={e => e.key === 'Enter' && handleAddRoot()}
               />
@@ -296,6 +278,6 @@ function HomeInner() {
   );
 }
 
-export default function HomePage() {
-  return <ToastProvider><HomeInner /></ToastProvider>;
-}
+// export default function HomePage() {
+//   return <ToastProvider><HomeInner /></ToastProvider>;
+// }

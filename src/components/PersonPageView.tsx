@@ -7,11 +7,10 @@ import {
   addChild, updateChild, removeChild,
   createChildPage, updatePageName, deletePage,
   sharePageWith, unsharePageWith,
-  linkSpouses, unlinkSpouses,
+  linkSpouses, 
   syncHusbandOnWifePage,
   syncChildOnMotherPage,
   removeChildrenByMother,
-  SonSearchResult,
 } from '@/lib/familyService';
 import WifeModal from './WifeModal';
 import ChildModal from './ChildModal';

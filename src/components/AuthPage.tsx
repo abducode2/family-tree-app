@@ -1,17 +1,22 @@
 'use client';
 import { useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
+import '@/styles/AuthPage.css';
 
 export default function AuthPage() {
   const { login, register } = useAuth();
   const [tab, setTab] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async () => {
     if (!email || !password) { setError('يرجى إدخال البريد وكلمة المرور'); return; }
+    if (tab === 'register' && password !== confirmPassword) { setError('كلمة المرور غير متطابقة'); return; }
     setLoading(true);
     setError('');
     try {
@@ -35,8 +40,7 @@ export default function AuthPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <div className="auth-logo">
-          <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🌳</div>
+        <div className="auth-logo">  
           <h1>شجرة العائلة</h1>
           <p>سجّل دخولك للوصول إلى شجرة عائلتك</p>
         </div>
@@ -44,7 +48,7 @@ export default function AuthPage() {
         <div className="auth-tabs">
           <button
             className={`auth-tab ${tab === 'login' ? 'active' : ''}`}
-            onClick={() => { setTab('login'); setError(''); }}
+            onClick={() => { setTab('login'); setError(''); setConfirmPassword(''); }}
           >
             تسجيل الدخول
           </button>
@@ -73,24 +77,62 @@ export default function AuthPage() {
 
         <div className="form-group">
           <label className="form-label">كلمة المرور</label>
-          <input
-            type="password"
-            className="form-input"
-            placeholder="••••••••"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-            dir="ltr"
-          />
+          <div className='form-password'>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              className="form-input"
+              placeholder="••••••••"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+              dir="ltr"
+              
+            />
+             <button className="show-confirm"
+              type="button"
+              onClick={() => setShowPassword(v => !v)}
+             
+            >
+              {showPassword ? '🙈' : '👁️'}
+            </button> 
+          </div>
         </div>
 
+        {tab === 'register' && (
+          <div className="form-group">
+            <label className="form-label">تأكيد كلمة المرور</label>
+            <div className='form-password'>
+              <input
+                type={showConfirm ? 'text' : 'password'}
+                className="form-input"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                dir="ltr"
+                
+              />
+            <button className='show-confirm'
+                type="button"
+                onClick={() => setShowConfirm(v => !v)}
+                
+              >
+                {showConfirm ? '🙈' : '👁️'}
+              </button> 
+            </div>
+          </div>
+        )}
+
         <button
-          className="btn btn-primary btn-lg"
-          style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem' }}
+          className="btn btn-primary btn-lg aut-btn"
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? 'جاري التحميل...' : tab === 'login' ? 'دخول' : 'إنشاء الحساب'}
+          {loading 
+          ? 'جاري التحميل...' 
+          : tab === 'login' 
+          ? 'دخول' 
+          : 'إنشاء الحساب'}
         </button>
       </div>
     </div>
