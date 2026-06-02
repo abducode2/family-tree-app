@@ -177,7 +177,7 @@ export async function searchPeople(uid: string, q: string): Promise<SearchResult
       results.push({ type: p.isRoot ? 'grandfather' : p.gender === 'male' ? 'son' : 'daughter',
         name: p.name, pageId: p.id, headName: p.name });
     for (const w of p.wives)
-      if (w.name.toLowerCase().includes(lq))
+      if (w.gender !== 'male' && w.name.toLowerCase().includes(lq))
         results.push({ type: 'wife', name: w.name, pageId: p.id, headName: p.name, personId: w.id });
     for (const c of p.children)
       if (c.name.toLowerCase().includes(lq))

@@ -93,12 +93,6 @@ function HomeInner() {
     ? rootPages.filter(r => r.name.includes(filterQ.trim()))
     : rootPages;
 
-  const typeBadge: Record<SearchResult['type'], { label: string; cls: string }> = {
-    grandfather: { label: 'جد',   cls: 'badge-grandfather' },
-    wife:        { label: 'زوجة', cls: 'badge-wife'        },
-    son:         { label: 'ابن',  cls: 'badge-son'         },
-    daughter:    { label: 'بنت',  cls: 'badge-daughter'    },
-  };
 
   return (
     <div className="app-container">
@@ -132,19 +126,19 @@ function HomeInner() {
           />
           {showSearch && (
             <div className="search-results">
-              {searchRes.length > 0 ? searchRes.map((r, i) => {
-                const b = typeBadge[r.type];
-                return (
+              {searchRes.length > 0 ? (() => {
+                const seen = new Set<string>();
+                return searchRes.filter(r => {
+                  if (seen.has(r.name)) return false;
+                  seen.add(r.name);
+                  return true;
+                }).map((r, i) => (
                   <div key={i} className="search-result-item"
                     onClick={() => { navigate(r.pageId); setShowSearch(false); setSearchQ(''); }}>
-                    <span className={`search-result-badge ${b.cls}`}>{b.label}</span>
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{r.name}</div>
-                      <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>صفحة {r.headName}</div>
-                    </div>
+                    <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{r.name}</div>
                   </div>
-                );
-              }) : (
+                ));
+              })() : (
                 <div style={{ padding: '1rem', textAlign: 'center', opacity: 0.5, fontSize: '0.875rem' }}>
                   لا توجد نتائج
                 </div>
