@@ -204,7 +204,7 @@ export default function PersonPageView({
 <html dir="rtl" lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>${page.name} - شجرة العائلة</title>
+  <title>${page.name} - شجرة عوائل سلنارتي</title>
   <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -226,7 +226,7 @@ export default function PersonPageView({
 <body>
   <div class="header">
     <h1>${page.name}</h1>
-    <p>شجرة العائلة · ${date}</p>
+    <p>شجرة عوائل سلنارتي · ${date}</p>
   </div>
   <div class="section">
     <div class="section-title">

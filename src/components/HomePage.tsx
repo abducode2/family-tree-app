@@ -104,7 +104,7 @@ export default function HomePage() {
           <span className="search-icon">🔍</span>
           <input
             className="search-input"
-            placeholder="ابحث عن أي شخص في شجرة العائلة..."
+            placeholder="ابحث عن أي شخص في شجرة عوائل سلنارتي..."
             value={searchQ}
             onChange={e => setSearchQ(e.target.value)}
             onFocus={() => searchRes.length > 0 && setShowSearch(true)}

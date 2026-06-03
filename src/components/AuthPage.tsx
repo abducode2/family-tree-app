@@ -41,7 +41,7 @@ export default function AuthPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-logo">  
-          <h1>شجرة العائلة</h1>
+          <h1>شجرة عوائل سلنارتي</h1>
           <p>سجّل دخولك للوصول إلى شجرة عائلتك</p>
         </div>
 

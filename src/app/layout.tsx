@@ -7,8 +7,8 @@ import { ToastProvider } from '@/components/Toast';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'شجرة العائلة',
-  description: 'تطبيق إدارة شجرة العائلة',
+  title: 'شجرة عوائل سلنارتي',
+  description: 'تطبيق إدارة شجرة عوائل سلنارتي',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

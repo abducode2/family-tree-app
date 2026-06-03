@@ -49,43 +49,29 @@
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
     direction: rtl;
   }
+.bottom-nav a.active {
+  transform: scale(0.96);
+  font-weight: 900;
+  color: var(--gold);
+}
 
-  .bottom-nav-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.2rem;
-    padding: 0.6rem 0.25rem;
-    color: rgba(255, 255, 255, 0.65);
-    text-decoration: none;
-    font-family: 'Cairo', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 600;
-    transition: color 0.2s, background 0.2s;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
 
-  .bottom-nav-item.active {
-    color: var(--gold-light);
-    background: rgba(255, 255, 255, 0.08);
-  }
 
-  .bottom-nav-item:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  .bottom-nav-icon {
-    font-size: 1.2rem;
-    line-height: 1;
-  }
+ .bottom-nav a {
+  font-family: 'Scheherazade New', serif;
+  color: #ffffff;
+  text-decoration: none;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  padding: 8px 14px;
+  width: 100%;
+  transition: 0.2s ease;
+  white-space: nowrap;
+}
 
   .bottom-nav-label {
-    font-size: 0.68rem;
+    font-size: 0.80rem;
   }
 
   /* مسافة في الأسفل حتى لا يطغى الشريط على المحتوى */

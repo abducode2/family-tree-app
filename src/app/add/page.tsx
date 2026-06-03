@@ -105,18 +105,7 @@ export default function HomePage() {
     <div className="app-container">
       {/* ── شريط التنقل ── */}
       
-      {/* <nav className="navbar">
-        <div className="navbar-brand">
-          <span>شجرة العائلة</span>
-        </div>
-        <div className="navbar-actions">
-          <span className="navbar-user">{user?.email}</span>
-          <button className="btn btn-sm btn-ghost"
-            onClick={() => setConfirmLogout(true)}>
-            خروج
-          </button>
-        </div>
-      </nav> */}
+ 
 
       <div className="main-layout">
 
@@ -125,7 +114,7 @@ export default function HomePage() {
           <span className="search-icon">🔍</span>
           <input
             className="search-input"
-            placeholder="ابحث عن أي شخص في شجرة العائلة..."
+            placeholder="ابحث عن أي شخص في شجرة عوائل سلنارتي..."
             value={searchQ}
             onChange={e => setSearchQ(e.target.value)}
             onFocus={() => searchRes.length > 0 && setShowSearch(true)}

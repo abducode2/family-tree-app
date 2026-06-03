@@ -22,7 +22,7 @@ const Navbar = () => {
     <>
       <header className="navbar">
         <div className="navbar-brand">
-          <span>شجرة العائلة</span>
+          <span>شجرة عوائل سلنارتي</span>
         </div>
 
         <nav className="nav-desktop">
@@ -44,13 +44,13 @@ const Navbar = () => {
 
       {/* شريط التنقل السفلي — جوال فقط */}
       <nav className="bottom-nav">
-        <Link href="/add" className={`bottom-nav-item${pathname === "/add" ? " active" : ""}`}>
-          <span className="bottom-nav-icon">➕</span>
-          <span className="bottom-nav-label">إضافة</span>
+        <Link href="/add" className={pathname === "/add" ? " active" : ""}>
+          
+          <span className="bottom-nav-label">إضافة العوائل</span>
         </Link>
-        <Link href="/view" className={`bottom-nav-item${pathname === "/view" ? " active" : ""}`}>
-          <span className="bottom-nav-icon">👁️</span>
-          <span className="bottom-nav-label">عرض</span>
+        <Link href="/view" className={pathname === "/view" ? " active" : ""}>
+          
+          <span className="bottom-nav-label">عرض العوائل</span>
         </Link>
       </nav>
 
