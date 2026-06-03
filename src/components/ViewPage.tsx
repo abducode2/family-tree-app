@@ -22,6 +22,87 @@ export default function ViewPages({
   const sons      = page.children.filter(c => c.gender === 'male');
   const daughters = page.children.filter(c => c.gender === 'female');
 
+  const exportToPDF = () => {
+    const date = new Date().toLocaleDateString('ar-SA');
+    const wivesRows = page.wives.length === 0
+      ? '<p style="opacity:0.5;font-size:0.9rem">لا يوجد</p>'
+      : page.wives.map((w, i) => `
+          <div class="row">
+            ${page.gender === 'male' ? `<span class="num">${i + 1}</span>` : ''}
+            <span class="name">${w.name}</span>
+            ${w.divorced ? '<span class="tag">مطلق/ة</span>' : ''}
+          </div>`).join('');
+    const sonsRows = sons.length === 0
+      ? '<p style="opacity:0.5;font-size:0.9rem">لا يوجد</p>'
+      : sons.map((s, i) => `
+          <div class="row">
+            <span class="num">${i + 1}</span>
+            <span class="name">${s.name}</span>
+            ${s.motherName ? `<span class="tag">الأم: ${s.motherName}</span>` : ''}
+          </div>`).join('');
+    const daughtersRows = daughters.length === 0
+      ? '<p style="opacity:0.5;font-size:0.9rem">لا يوجد</p>'
+      : daughters.map((d, i) => `
+          <div class="row">
+            <span class="num">${i + 1}</span>
+            <span class="name">${d.name}</span>
+            ${d.motherName ? `<span class="tag">الأم: ${d.motherName}</span>` : ''}
+          </div>`).join('');
+
+    const html = `<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>${page.name} - شجرة العائلة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Cairo',sans-serif;direction:rtl;color:#1a1208;padding:2rem;background:#fff;font-size:14px}
+    .header{background:#1e3a5f;color:#fff;padding:1.25rem 1.5rem;border-radius:8px;margin-bottom:1.75rem}
+    .header h1{font-family:'Scheherazade New',serif;font-size:1.8rem;margin-bottom:0.2rem}
+    .header p{font-size:0.82rem;opacity:0.7}
+    .section{margin-bottom:1.5rem;page-break-inside:avoid}
+    .section-title{font-family:'Scheherazade New',serif;font-size:1.15rem;color:#1e3a5f;border-bottom:2px solid #c9b882;padding-bottom:0.35rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem}
+    .badge{background:#b8860b;color:#fff;font-size:0.7rem;padding:0.1rem 0.45rem;border-radius:12px;font-family:'Cairo',sans-serif}
+    .row{padding:0.45rem 0;border-bottom:1px solid #e2d5a8;display:flex;align-items:center;gap:0.6rem}
+    .row:last-child{border-bottom:none}
+    .num{background:#1e3a5f;color:#fff;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0}
+    .name{flex:1;font-weight:600}
+    .tag{font-size:0.68rem;background:#f5e6b8;border:1px solid #b8860b;color:#7a5a00;padding:0.1rem 0.4rem;border-radius:10px;white-space:nowrap}
+    @media print{@page{margin:1.5cm;size:A4}body{padding:0}}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>${page.name}</h1>
+    <p>شجرة العائلة · ${date}</p>
+  </div>
+  <div class="section">
+    <div class="section-title">
+      ${page.gender === 'female' ? 'الزوج' : 'الزوجات'}
+      <span class="badge">${page.wives.length}</span>
+    </div>
+    ${wivesRows}
+  </div>
+  <div class="section">
+    <div class="section-title">الأبناء <span class="badge">${sons.length}</span></div>
+    ${sonsRows}
+  </div>
+  <div class="section">
+    <div class="section-title">البنات <span class="badge">${daughters.length}</span></div>
+    ${daughtersRows}
+  </div>
+</body>
+</html>`;
+
+    const w = window.open('', '_blank');
+    if (!w) { showToast('يرجى السماح بالنوافذ المنبثقة', 'error'); return; }
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 600);
+  };
+
   const handleOpenChild = async (child: Person) => {
     if (child.linkedPersonId) { onNavigate(child.linkedPersonId); return; }
     try {
@@ -51,6 +132,9 @@ export default function ViewPages({
             <span className="family-header-name">{page.name}</span>
             {page.isRoot && <span className="btn-gander">الجد الأول</span>}
           </div>
+        </div>
+        <div className="containers-btn">
+          <button className="btn btn-sm btn-edit-share" onClick={exportToPDF}>📄 PDF</button>
         </div>
       </div>
 
