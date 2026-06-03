@@ -4,6 +4,8 @@ import { AuthProvider } from '@/lib/AuthContext';
 import Navbar from '@/components/Navbar';
 import { ToastProvider } from '@/components/Toast';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'شجرة العائلة',
   description: 'تطبيق إدارة شجرة العائلة',
