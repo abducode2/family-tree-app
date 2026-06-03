@@ -1,108 +1,46 @@
-
-
 'use client';
-import { useState, useEffect, useRef } from 'react';
-import { Person, PersonPage } from '@/types';
-import { searchSons, SonSearchResult } from '@/lib/familyService';
+import { useState } from 'react';
+import { Person } from '@/types';
 
 interface ChildModalProps {
   initial?: Person | null;
   wives: Person[];
-  allPages: PersonPage[];
-  currentUserId: string;
   fatherName: string;
   pageGender?: 'male' | 'female';
-  onSave: (child: Person, spouseInfo?: { husbandPageId: string; husbandPersonId: string; husbandName: string }) => void;
+  onSave: (child: Person) => void;
   onClose: () => void;
 }
 
 export default function ChildModal({
-  initial, wives, allPages, currentUserId, fatherName, pageGender = 'male', onSave, onClose
+  initial, wives, fatherName, pageGender = 'male', onSave, onClose
 }: ChildModalProps) {
-  const [name,       setName]       = useState(initial?.name ?? '');
-  const [gender,     setGender]     = useState<'male' | 'female'>(initial?.gender ?? 'male');
-  const [motherId,   setMotherId]   = useState(initial?.motherId ?? '');
+  const [name,     setName]     = useState(initial?.name ?? '');
+  const [gender,   setGender]   = useState<'male' | 'female'>(initial?.gender ?? 'male');
+  const [motherId, setMotherId] = useState(initial?.motherId ?? '');
 
-  // بحث الزوج
-  const [spouseQuery,    setSpouseQuery]    = useState(initial?.spouseName ?? '');
-  const [spouseResults,  setSpouseResults]  = useState<SonSearchResult[]>([]);
-  const [showSpouseDrop, setShowSpouseDrop] = useState(false);
-  const [selectedSpouse, setSelectedSpouse] = useState<SonSearchResult | null>(null);
-  // إذا كان اسماً يدوياً فقط
-  const [spouseManual,   setSpouseManual]   = useState(
-    initial?.spouseName && !initial.spousePageId ? initial.spouseName : ''
-  );
-  const [spouseMode,     setSpouseMode]     = useState<'search' | 'manual'>(
-    initial?.spousePageId ? 'search' : 'manual'
-  );
-
-  const spouseRef = useRef<HTMLDivElement>(null);
-
-  // إغلاق dropdown عند النقر خارجه
-  useEffect(() => {
-    const h = (e: MouseEvent) => {
-      if (spouseRef.current && !spouseRef.current.contains(e.target as Node))
-        setShowSpouseDrop(false);
-    };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, []);
-
-  // بحث فوري
-  useEffect(() => {
-    if (spouseMode !== 'search' || !spouseQuery.trim()) { setSpouseResults([]); return; }
-    const t = setTimeout(async () => {
-      const res = await searchSons(currentUserId, spouseQuery);
-      setSpouseResults(res);
-      setShowSpouseDrop(true);
-    }, 250);
-    return () => clearTimeout(t);
-  }, [spouseQuery, spouseMode, currentUserId]);
-
-  const handleSelectSpouse = (s: SonSearchResult) => {
-    setSelectedSpouse(s);
-    setSpouseQuery(s.name);
-    setShowSpouseDrop(false);
-  };
-
-  const clearSpouse = () => {
-    setSelectedSpouse(null);
-    setSpouseQuery('');
-    setSpouseManual('');
-  };
+  const effectiveFatherName = pageGender === 'female'
+    ? (wives.find(w => w.id === motherId)?.name ?? fatherName)
+    : fatherName;
 
   const fullName = !initial && name.trim()
-    ? `${name.trim()} ${gender === 'male' ? '' : ''} ${fatherName}`
+    ? `${name.trim()} ${effectiveFatherName}`
     : name.trim();
 
   const handleSave = () => {
     if (!name.trim()) return;
     if (wives.length > 0 && !motherId) return;
 
-    const spouseName = spouseMode === 'search'
-      ? selectedSpouse?.name
-      : spouseManual.trim() || undefined;
-
-    const child: Person = {
+    onSave({
       id: initial?.id ?? Math.random().toString(36).slice(2),
       name: fullName,
       gender,
       motherId: motherId || undefined,
       motherName: wives.find(w => w.id === motherId)?.name,
       linkedPersonId: initial?.linkedPersonId,
-      spouseName,
-      spousePageId: spouseMode === 'search' ? selectedSpouse?.pageId || undefined : undefined,
-      spousePersonId: spouseMode === 'search' ? selectedSpouse?.personId || undefined : undefined,
-    };
-
-    const spouseInfo = (spouseMode === 'search' && selectedSpouse?.pageId)
-      ? { husbandPageId: selectedSpouse.pageId, husbandPersonId: selectedSpouse.personId, husbandName: selectedSpouse.name }
-      : undefined;
-
-    onSave(child, spouseInfo);
+    });
   };
 
-  const canSave = name.trim() && (wives.length === 0 || !!motherId);
+  const canSave = wives.length > 0 && !!name.trim() && !!motherId;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -127,13 +65,13 @@ export default function ChildModal({
               }}>
                 <input type="radio" name="gender" value={g} checked={gender === g}
                   onChange={() => setGender(g)} style={{ display: 'none' }} />
-                {g === 'male' ? 'الابناء ' : ' البنات'}
+                {g === 'male' ? 'الأبناء' : 'البنات'}
               </label>
             ))}
           </div>
         </div>
 
-        {/* الأم — مطلوبة دائماً */}
+        {/* الأم / الأب */}
         <div className="form-group">
           <label className="form-label">{pageGender === 'female' ? 'الأب *' : 'الأم *'}</label>
           {wives.length === 0 ? (
@@ -142,7 +80,9 @@ export default function ChildModal({
               border: '1px solid var(--gold)', borderRadius: '8px',
               fontSize: '0.85rem', color: 'var(--ink)',
             }}>
-              يجب إضافة زوجة أولاً قبل إضافة الأبناء
+              {pageGender === 'female'
+                ? 'يجب إضافة الزوج أولاً قبل إضافة الأبناء'
+                : 'يجب إضافة زوجة أولاً قبل إضافة الأبناء'}
             </div>
           ) : (
             <select
@@ -151,8 +91,12 @@ export default function ChildModal({
               onChange={e => setMotherId(e.target.value)}
               style={{ borderColor: !motherId ? 'var(--gold)' : 'var(--border-light)' }}
             >
-              <option value="">— اختر  —</option>
-              {wives.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
+              <option value="">— اختر —</option>
+              {wives.map(w => (
+                <option key={w.id} value={w.id}>
+                  {w.name}{w.divorced ? (w.gender === 'male' ? ' (مطلق)' : ' (مطلقة)') : ''}
+                </option>
+              ))}
             </select>
           )}
         </div>
@@ -165,8 +109,10 @@ export default function ChildModal({
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="أدخل الاسم"
-            autoFocus
+            autoFocus={wives.length > 0}
+            disabled={wives.length === 0}
             onKeyDown={e => e.key === 'Enter' && handleSave()}
+            style={wives.length === 0 ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
           />
           {name.trim() && !initial && (
             <div style={{
@@ -180,104 +126,6 @@ export default function ChildModal({
             </div>
           )}
         </div>
-
-        {/* زوج البنت — فقط للإناث */}
-        {gender === 'female' && (
-          <div className="form-group">
-            <label className="form-label">
-              الزوج
-              <span style={{ marginRight: '0.4rem', fontSize: '0.72rem', opacity: 0.55,
-                background: 'var(--parchment-dark)', padding: '0.1rem 0.45rem',
-                borderRadius: '20px', border: '1px solid var(--border-light)' }}>
-                اختياري
-              </span>
-            </label>
-
-            {/* تبديل الوضع */}
-            <div className="auth-tabs" style={{ marginBottom: '0.75rem' }}>
-              <button
-                className={`auth-tab ${spouseMode === 'search' ? 'active' : ''}`}
-                onClick={() => { setSpouseMode('search'); setSpouseManual(''); }}
-              >
-                🔍 بحث في المسجلين
-              </button>
-              <button
-                className={`auth-tab ${spouseMode === 'manual' ? 'active' : ''}`}
-                onClick={() => { setSpouseMode('manual'); clearSpouse(); }}
-              >
-                ✏️ كتابة يدوية
-              </button>
-            </div>
-
-            {spouseMode === 'search' ? (
-              <div ref={spouseRef} style={{ position: 'relative' }}>
-                {selectedSpouse ? (
-                  /* عرض الزوج المحدد */
-                  <div style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '0.6rem 0.9rem', background: 'var(--male-bg)',
-                    border: '2px solid var(--male-border)', borderRadius: '8px',
-                  }}>
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{selectedSpouse.name}</div>
-                      <div style={{ fontSize: '0.75rem', opacity: 0.65 }}>ابن {selectedSpouse.parentName}</div>
-                      {selectedSpouse.pageId && (
-                        <div style={{ fontSize: '0.72rem', color: 'var(--sage)', marginTop: '0.1rem' }}>
-                          ✓ له صفحة — سيُضاف الربط تلقائياً
-                        </div>
-                      )}
-                    </div>
-                    <button className="btn btn-sm btn-ghost" onClick={clearSpouse}
-                      style={{ fontSize: '0.75rem' }}>تغيير</button>
-                  </div>
-                ) : (
-                  <>
-                    <input
-                      className="form-input"
-                      value={spouseQuery}
-                      onChange={e => { setSpouseQuery(e.target.value); setShowSpouseDrop(true); }}
-                      placeholder="ابحث باسم الزوج..."
-                      onFocus={() => spouseResults.length > 0 && setShowSpouseDrop(true)}
-                    />
-                    {showSpouseDrop && spouseQuery.trim() && (
-                      <div className="search-results" style={{ position: 'absolute', top: 'calc(100% + 4px)', zIndex: 300 }}>
-                        {spouseResults.length > 0 ? spouseResults.map((s, i) => (
-                          <div key={i} className="search-result-item" onClick={() => handleSelectSpouse(s)}>
-                            <span className="search-result-badge badge-son">ابن</span>
-                            <div>
-                              <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{s.name}</div>
-                              <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>
-                                ابن {s.parentName}
-                                {s.pageId && <span style={{ color: 'var(--sage)', marginRight: '0.3rem' }}> · له صفحة</span>}
-                              </div>
-                            </div>
-                          </div>
-                        )) : (
-                          <div style={{ padding: '0.75rem 1rem' }}>
-                            <p style={{ fontSize: '0.82rem', opacity: 0.6, marginBottom: '0.5rem' }}>
-                              لا توجد نتائج
-                            </p>
-                            <button className="btn btn-sm btn-ghost" style={{ width: '100%', justifyContent: 'center' }}
-                              onClick={() => { setSpouseMode('manual'); setSpouseManual(spouseQuery); setShowSpouseDrop(false); }}>
-                              + إضافة "{spouseQuery}" يدوياً
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            ) : (
-              <input
-                className="form-input"
-                value={spouseManual}
-                onChange={e => setSpouseManual(e.target.value)}
-                placeholder="اسم الزوج"
-              />
-            )}
-          </div>
-        )}
 
         <div className="modal-footer">
           <button className="btn btn-ghost" onClick={onClose}>إلغاء</button>

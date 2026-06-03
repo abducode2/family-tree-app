@@ -1,0 +1,166 @@
+
+
+.family-header {
+  background: var(--cobalt);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.family-header::after {
+  content: '⁜';
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 4rem;
+  color: rgba(255,255,255,0.05);
+  font-family: 'Scheherazade New', serif;
+  pointer-events: none;
+}
+
+.family-header-name {
+  font-family: 'Scheherazade New', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.family-header-sub {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.65);
+  margin-top: 0.25rem;
+}
+.family-card-header{
+     flex: 1 ;
+}
+.form-header{
+ display: flex;
+gap: 0.5rem;
+align-items: center;
+flex-wrap: wrap;
+}
+.btn-style{
+   background: #ffffff26;
+    color: white;
+     border-color: #ffffff4d;
+      min-width: 180px ;
+}
+.btn-save{
+   background: var(--gold);
+    color: white;
+}
+.btn-close{
+     color: white;
+      border-color: rgba(255,255,255,0.3);
+}
+.btn-close:hover{
+     color: var(--gold);
+      border-color: white;
+}
+.container-title{
+     display: flex;
+      align-items: center;
+       gap: 0.6rem;
+        margin-bottom: 0.3rem;
+}
+.btn-gander{
+     font-size: 0.7rem;
+      background: var(--gold);
+       color: white;
+        padding: 0.15rem 0.5rem;
+         border-radius: 20px;
+          font-weight: 700 
+}
+.containers-btn{
+    display: flex;
+     gap: 0.4rem;
+      flex-wrap: wrap;
+}
+.btn-edit-share{
+   background: #ffffff1f;
+   color: white;
+   border-color: #ffffff40;
+}
+.btn-delet{
+    background: transparent;
+    color: #ff0000;
+    border:1.5px solid var(--gold);
+   
+}
+.btn-delet:hover{
+    background: #222222d8;
+    color: white;
+    border:1.5px solid var(--gold);
+   
+}
+/* ── أقسام ── */
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+.section-box {
+  background: var(--cream);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 10px var(--shadow);
+}
+
+/* ── قسم الزوجات والأبناء ── */
+.section-title {
+  font-family: 'Scheherazade New', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--cobalt);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.section-title .section-count {
+  background: var(--gold-pale);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  font-family: 'Cairo', sans-serif;
+}
+.person-info { flex: 1; min-width: 0;}
+.person-number-name{
+   display: flex;
+    align-items: center;
+     gap: 0.4rem;
+    
+}
+/* ── ترقيم الزوجات ── */
+.wife-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--gold);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.person-name { 
+    font-weight: 600; 
+    font-size: 0.92rem; 
+    color: var(--ink);
+ }
+ .person-actions { display: flex; gap: 0.4rem; }

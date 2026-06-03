@@ -97,6 +97,21 @@ export default function HomePage() {
 
   return (
     <div className="app-container">
+      {/* ── شريط التنقل ── */}
+      
+      {/* <nav className="navbar">
+        <div className="navbar-brand">
+          <span>شجرة العائلة</span>
+        </div>
+        <div className="navbar-actions">
+          <span className="navbar-user">{user?.email}</span>
+          <button className="btn btn-sm btn-ghost"
+            onClick={() => setConfirmLogout(true)}>
+            خروج
+          </button>
+        </div>
+      </nav> */}
+
       <div className="main-layout">
 
         {/* ── بحث عام (الصفحة الرئيسية فقط) ── */}
@@ -205,14 +220,19 @@ export default function HomePage() {
             ) : (
               <div className="families-grid">
                 {filteredRoots.map(r => (
-                  <div key={r.id} className="family-card" 
-                   onClick={() => navigate(r.id)}>
+                  <div key={r.id} className="family-card" onClick={() => navigate(r.id)}>
                     {/* حرف أبجدي كبير */}
                     <div className='family-charat'>
                       {r.name.charAt(0)}
+                      
+                        
                     </div>
                     <div className="family-card-head">{r.name}</div>
-                    
+                    {/* <div className="family-card-stats">
+                      <span className="family-card-stat"> {(r.wives ?? []).length}</span>
+                      <span className="family-card-stat"> {(r.children ?? []).filter(c => c.gender === 'male').length}</span>
+                      <span className="family-card-stat"> {(r.children ?? []).filter(c => c.gender === 'female').length}</span>
+                    </div> */}
                   </div>
                 ))}
               </div>

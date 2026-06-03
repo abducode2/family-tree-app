@@ -2,7 +2,7 @@
 
 import {
   collection, doc, addDoc, updateDoc, deleteDoc,
-  getDoc, getDocs, query, where, orderBy
+  getDoc, getDocs, query, where, writeBatch
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { PersonPage, Person, SearchResult } from '@/types';
@@ -166,6 +166,43 @@ export async function deletePage(pageId: string): Promise<void> {
   await deleteDoc(doc(db, PAGES, pageId));
 }
 
+// ── حذف صفحة مع جميع المرتبطين بها (أبناء + زوجات + أحفاد...) ──
+export async function deletePageCascade(startPageId: string, uid: string): Promise<void> {
+  const allPages = await getUserPages(uid);
+  const pageMap  = new Map(allPages.map(p => [p.id, p]));
+
+  const toDelete = new Set<string>([startPageId]);
+  let changed = true;
+
+  while (changed) {
+    changed = false;
+    for (const p of allPages) {
+      if (toDelete.has(p.id)) continue;
+
+      // 1) صفحة ابن/بنت (parentPageId يشير لصفحة في المجموعة)
+      if (p.parentPageId && toDelete.has(p.parentPageId)) {
+        toDelete.add(p.id); changed = true; continue;
+      }
+
+      // 2) صفحة زوجة/زوج (linkedPersonId في wives لأي صفحة في المجموعة)
+      for (const pid of toDelete) {
+        const pg = pageMap.get(pid);
+        if (pg?.wives.some(w => w.linkedPersonId === p.id)) {
+          toDelete.add(p.id); changed = true; break;
+        }
+      }
+    }
+  }
+
+  // حذف دفعي — Firestore يقبل 500 عملية كحد أقصى لكل batch
+  const ids = [...toDelete];
+  for (let i = 0; i < ids.length; i += 500) {
+    const batch = writeBatch(db);
+    ids.slice(i, i + 500).forEach(id => batch.delete(doc(db, PAGES, id)));
+    await batch.commit();
+  }
+}
+
 // ── البحث ──
 export async function searchPeople(uid: string, q: string): Promise<SearchResult[]> {
   const pages = await getUserPages(uid);
@@ -316,6 +353,35 @@ export async function syncHusbandOnWifePage(
   } else {
     await updateDoc(doc(db, PAGES, wifeOwnPageId), {
       wives: (wifePage.wives ?? []).filter(w => w.linkedPersonId !== husbandPageId).map(clean),
+    });
+  }
+}
+
+// ── مزامنة الزوجة في صفحة الزوج (إضافة / حذف) ──
+export async function syncWifeOnHusbandPage(
+  wifePageId: string,
+  wifeName: string,
+  husbandOwnPageId: string,
+  action: 'add' | 'remove'
+): Promise<void> {
+  const husbandPage = await getPage(husbandOwnPageId);
+  if (!husbandPage) return;
+
+  if (action === 'add') {
+    const alreadyLinked = (husbandPage.wives ?? []).some(w => w.linkedPersonId === wifePageId);
+    if (alreadyLinked) return;
+    const entry: Person = clean({
+      id: Math.random().toString(36).slice(2),
+      name: wifeName,
+      gender: 'female' as const,
+      linkedPersonId: wifePageId,
+    });
+    await updateDoc(doc(db, PAGES, husbandOwnPageId), {
+      wives: [...(husbandPage.wives ?? []), entry].map(clean),
+    });
+  } else {
+    await updateDoc(doc(db, PAGES, husbandOwnPageId), {
+      wives: (husbandPage.wives ?? []).filter(w => w.linkedPersonId !== wifePageId).map(clean),
     });
   }
 }

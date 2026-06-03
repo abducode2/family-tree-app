@@ -1,41 +1,4 @@
-// // شخص مسجل (زوجة أو ابن أو بنت) قد يكون له صفحته الخاصة
-// export interface Person {
-//   id: string;
-//   name: string;
-//   gender: 'male' | 'female';
-//   // إذا كانت الزوجة مرتبطة بصفحة شخص آخر
-//   linkedPersonId?: string;
-//   // للأبناء والبنات
-//   motherId?: string;
-//   motherName?: string;
-//   // للبنات: زوجها
-//   spouseName?: string;
-//   spouseLinkedPersonId?: string;
-// }
 
-// // صفحة شخص (جد، ابن أصبح أباً، أو بنت تزوجت)
-// export interface PersonPage {
-//   id: string;
-//   name: string;
-//   gender: 'male' | 'female';
-//   wives: Person[];       // الزوجات (للرجل)
-//   children: Person[];    // الأبناء والبنات
-//   ownerId: string;
-//   sharedWith: string[];
-//   createdAt: number;
-//   // رابط للأب
-//   parentPageId?: string;
-//   parentPersonId?: string; // معرّف الابن في صفحة الأب
-//   isRoot?: boolean;        // الجد الأول
-// }
-
-// export interface SearchResult {
-//   type: 'grandfather' | 'wife' | 'son' | 'daughter';
-//   name: string;
-//   pageId: string;
-//   headName: string;
-//   personId?: string;
-// }
 // شخص مسجل (زوجة أو ابن أو بنت) قد يكون له صفحته الخاصة
 export interface Person {
   id: string;
@@ -43,6 +6,7 @@ export interface Person {
   gender: 'male' | 'female';
   // إذا كانت الزوجة/الزوج مرتبطاً بصفحة شخص آخر
   linkedPersonId?: string;
+  divorced?: boolean;
   // للأبناء والبنات
   motherId?: string;
   motherName?: string;

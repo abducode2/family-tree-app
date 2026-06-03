@@ -1,0 +1,29 @@
+nav {
+  direction: rtl;
+  display: flex;
+  gap: 10px;
+  
+ 
+}
+
+nav a {
+  font-family: 'Scheherazade New', serif;
+  color: #eee;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: 0.2s ease;
+}
+
+nav a:hover {
+  background: #3f3f3e;
+  color: #fff;
+}
+
+
+nav a.active {
+transform: scale(0.96);
+  background: var(--gold);
+  color: white;
+}

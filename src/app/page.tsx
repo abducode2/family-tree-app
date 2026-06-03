@@ -2,7 +2,6 @@
 import { useAuth } from '@/lib/AuthContext';
 import AuthPage from '@/components/AuthPage';
 import HomePage from '@/components/HomePage';
-import { ToastProvider } from '@/components/Toast';
 
 export default function Page() {
   const { user, loading } = useAuth();
@@ -17,8 +16,8 @@ export default function Page() {
   }
 
   return user ? 
-  <ToastProvider>
+  
   <HomePage /> 
-  </ToastProvider>
+ 
   : <AuthPage />;
 }
