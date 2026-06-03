@@ -80,11 +80,6 @@ export default function ViewPages({
                       }}>{w.gender === 'male' ? 'مطلق' : 'مطلقة'}</span>
                     )}
                   </div>
-                  {/* {w.linkedPersonId && (
-                    <button className="link-badge" onClick={() => onNavigate(w.linkedPersonId!)}>
-                      🔗 {page.gender === 'female' ? 'عرض صفحته' : 'عرض صفحتها'}
-                    </button>
-                  )} */}
                 </div>
               </div>
             ))
@@ -126,7 +121,7 @@ export default function ViewPages({
                 <div className="person-info">
                   <div className="person-name">{d.name}</div>
                   {d.motherName && <div className="person-meta">الأم: {d.motherName}</div>}
-                  {d.spouseName && (
+                  {/* {d.spouseName && (
                     <div className="person-meta">
                       الزوج: {d.spouseName}
                       {d.spousePageId && (
@@ -134,9 +129,9 @@ export default function ViewPages({
                           onClick={e => { e.stopPropagation(); onNavigate(d.spousePageId!); }}>
                           🔗 صفحته
                         </button>
-                      )}
+                      )} 
                     </div>
-                  )}
+                  )}*/}
                 </div>
               </div>
             ))

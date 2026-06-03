@@ -1,12 +1,11 @@
-nav {
+/* ── شريط التنقل العلوي (ديسكتوب) ── */
+.nav-desktop {
   direction: rtl;
   display: flex;
   gap: 10px;
-  
- 
 }
 
-nav a {
+.nav-desktop a {
   font-family: 'Scheherazade New', serif;
   color: #eee;
   text-decoration: none;
@@ -14,16 +13,83 @@ nav a {
   padding: 8px 14px;
   border-radius: 6px;
   transition: 0.2s ease;
+  white-space: nowrap;
 }
 
-nav a:hover {
+.nav-desktop a:hover {
   background: #3f3f3e;
   color: #fff;
 }
 
-
-nav a.active {
-transform: scale(0.96);
+.nav-desktop a.active {
+  transform: scale(0.96);
   background: var(--gold);
   color: white;
+}
+
+/* ── شريط التنقل السفلي (جوال) ── */
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .nav-desktop {
+    display: none;
+  }
+
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 100;
+    background: var(--cobalt);
+    border-top: 2px solid var(--gold);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
+    direction: rtl;
+  }
+
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    padding: 0.6rem 0.25rem;
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: color 0.2s, background 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--gold-light);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .bottom-nav-item:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .bottom-nav-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+
+  .bottom-nav-label {
+    font-size: 0.68rem;
+  }
+
+  /* مسافة في الأسفل حتى لا يطغى الشريط على المحتوى */
+  body {
+    padding-bottom: 70px;
+  }
 }

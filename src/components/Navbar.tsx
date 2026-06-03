@@ -19,21 +19,14 @@ const Navbar = () => {
         <div className="navbar-brand">
           <span>شجرة العائلة</span>
         </div>
-        <nav>
-      <Link
-        href="/add"
-        className={pathname === "/add" ? "active" : ""}
-      >
-        اضافة العوائل
-      </Link>
-
-      <Link
-        href="/view"
-        className={pathname === "/view" ? "active" : ""}
-      >
-        عرض العوائل
-      </Link>
-    </nav>
+        <nav className="nav-desktop">
+          <Link href="/add" className={pathname === "/add" ? "active" : ""}>
+            اضافة العوائل
+          </Link>
+          <Link href="/view" className={pathname === "/view" ? "active" : ""}>
+            عرض العوائل
+          </Link>
+        </nav>
         <div className="navbar-actions">
           <span className="navbar-user">{user?.email}</span>
           <button className="btn btn-sm btn-ghost"
@@ -42,10 +35,21 @@ const Navbar = () => {
           </button>
         </div>
       </header>
-      {confirmLogout && (
-        <ConfirmDialog title="تسجيل الخروج" message="هل تريد الخروج؟"
-          confirmLabel="خروج" onConfirm={logout} onCancel={() => setConfirmLogout(false)} />
-      )}
+
+      {/* شريط التنقل السفلي - للجوال فقط */}
+      <nav className="bottom-nav">
+        <Link href="/add" className={`bottom-nav-item${pathname === "/add" ? " active" : ""}`}>
+         
+          <span className="bottom-nav-label">إضافة العوائل</span>
+        </Link>
+        <Link href="/view" className={`bottom-nav-item${pathname === "/view" ? " active" : ""}`}>
+          
+          <span className="bottom-nav-label">عرض العوائل</span>
+        </Link>
+        
+      </nav>
+
+     
       </>
   )
 }

@@ -185,21 +185,20 @@ border-color: #ffffff33
     font-weight: 700;
 }
 
-.family-charat{
+.family-charat {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  margin-left: 0.75rem;
+  background: linear-gradient(135deg, var(--cobalt), var(--cobalt-light));
   display: flex;
-     width: 30;
-      height: 30;
-       border-radius: 12px;
-        margin-left: 0.75rem;
-                      background: linear-gradient(135deg, var(--cobalt), var(--cobalt-light));
-                      display: flex;
-                       align-items: center;
-                        justify-content: center;
-                      font-family: Scheherazade New, serif;
-                       font-size: 1rem;
-                      color: white;
-                       font-weight: 700;
-             
+  align-items: center;
+  justify-content: center;
+  font-family: 'Scheherazade New', serif;
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 700;
 }
 .family-card {
   background: var(--cream);
@@ -260,4 +259,35 @@ border-color: #ffffff33
   justify-content: center;
   font-size: 1.2rem;
   margin-bottom: 0.75rem;
-} 
+}
+
+/* ── استجابة للشاشات الصغيرة ── */
+@media (max-width: 640px) {
+  .header-container {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .header-container h2 {
+    font-size: 1.3rem;
+  }
+  .search-input {
+    font-size: 0.9rem;
+    padding: 0.65rem 0.75rem 0.65rem 2.75rem;
+  }
+  .navbar-brand span {
+    font-size: 1.1rem;
+  }
+  .family-card {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .search-results {
+    max-height: 260px;
+  }
+  .search-result-item {
+    padding: 0.6rem 0.75rem;
+    gap: 0.5rem;
+  }
+}

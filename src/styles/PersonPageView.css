@@ -105,6 +105,12 @@ flex-wrap: wrap;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
+
+@media (max-width: 768px) {
+  .two-column {
+    grid-template-columns: 1fr;
+  }
+}
 .section-box {
   background: var(--cream);
   border: 1px solid var(--border-light);
@@ -164,3 +170,59 @@ flex-wrap: wrap;
     color: var(--ink);
  }
  .person-actions { display: flex; gap: 0.4rem; }
+
+/* ── استجابة للشاشات الصغيرة ── */
+@media (max-width: 640px) {
+  /* رأس الصفحة */
+  .family-header {
+    padding: 1rem;
+  }
+  .family-header-name {
+    font-size: 1.35rem;
+    word-break: break-word;
+  }
+  .family-header::after {
+    display: none;
+  }
+
+  /* وضع تعديل الاسم */
+  .form-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .form-header .form-input,
+  .form-header .btn-style {
+    min-width: unset;
+    width: 100%;
+  }
+
+  /* أزرار رأس الصفحة */
+  /* .containers-btn {
+    width: 100%;
+    justify-content: flex-start;
+  } */
+
+  /* الأقسام */
+  .section-box {
+    padding: 0.875rem;
+  }
+  .section-title {
+    font-size: 1.05rem;
+  }
+
+  /* بطاقة الشخص */
+  .person-card {
+    padding: 0.6rem 0.5rem;
+  }
+  .person-name {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    font-size: 0.88rem;
+  }
+  .person-meta {
+    font-size: 0.72rem;
+  }
+  .person-actions {
+    flex-shrink: 0;
+  }
+}
