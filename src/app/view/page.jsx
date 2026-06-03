@@ -7,7 +7,7 @@ import { usePage } from '@/hooks/useFamily';
 import { useNavigationHistory } from '@/hooks/useNavigationHistory';
 import { useAuth } from '@/lib/AuthContext';
 import { getRootPages, searchPeople } from '@/lib/familyService';
-import '@/styles/HomePage.css';
+import '../../styles/HomePage.Model.css';
 
 function ViewContent() {
   const searchParams  = useSearchParams();

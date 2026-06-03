@@ -2,7 +2,7 @@
 import { PersonPage, Person } from '@/types';
 import { createChildPage } from '@/lib/familyService';
 import { useToast } from './Toast';
-import '@/styles/PersonPageView.css';
+import '../styles/PersonPageView.css';
 
 interface Props {
   page: PersonPage;

@@ -15,7 +15,7 @@ import WifeModal from './WifeModal';
 import ChildModal from './ChildModal';
 import ConfirmDialog from './ConfirmDialog';
 import { useToast } from './Toast';
-import '@/styles/PersonPageView.css';
+import '../styles/PersonPageView.css';
 
 
 interface Props {

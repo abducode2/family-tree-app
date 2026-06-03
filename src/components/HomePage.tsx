@@ -9,7 +9,7 @@ import { usePage } from '@/hooks/useFamily';
 import {  useToast } from '@/components/Toast';
 import PersonPageView from '@/components/PersonPageView';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import "@/styles/HomePage.css"
+import "../styles/HomePage.Model.css"
 
 export default function HomePage() {
   const { user, logout } = useAuth();

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import ConfirmDialog from '@/components/ConfirmDialog';
 import Link from "next/link";
-import "@/styles/nav.css"
+import "../styles/nav.css"
 
 
 
