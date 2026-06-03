@@ -1,6 +1,7 @@
 
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { PersonPage, SearchResult } from '@/types';
 import { getUserPages, getRootPages, createRootPage, searchPeople } from '@/lib/familyService';
@@ -13,6 +14,11 @@ import "../../styles/HomePage.Model.css"
 
 export default function HomePage() {
   const { user, logout } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) router.push('/');
+  }, [user]);
   const { showToast } = useToast();
   const { current, navigate, goBack, goHome, canGoBack } = useNavigationHistory();
   const { page, loading: pageLoading, refresh: refreshPage } = usePage(current);

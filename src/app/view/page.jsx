@@ -15,6 +15,10 @@ function ViewContent() {
   const urlId         = searchParams.get('id') ?? '';
   const { user } = useAuth();
   const { current, navigate, goBack, goHome, canGoBack } = useNavigationHistory(urlId || null);
+
+  useEffect(() => {
+    if (!user) router.push('/');
+  }, [user]);
   const { page, loading, refresh } = usePage(current);
 
   // قائمة الأجداد عند عدم وجود id
