@@ -159,7 +159,6 @@ export default function HomePage() {
               page={page}
               allPages={allPages}
               currentUserId={user!.uid}
-              currentUserEmail={user!.email!}
               onNavigate={navigate}
               onBack={goBack}
               onHome={goHome}
