@@ -26,12 +26,13 @@ const Navbar = () => {
         </div>
 
         <nav className="nav-desktop">
+           <Link href="/view" className={pathname === "/view" ? "active" : ""}>
+            عرض العوائل
+          </Link>
           <Link href="/add" className={pathname === "/add" ? "active" : ""}>
             إضافة العوائل
           </Link>
-          <Link href="/view" className={pathname === "/view" ? "active" : ""}>
-            عرض العوائل
-          </Link>
+         
         </nav>
 
         <div className="navbar-actions">
@@ -44,14 +45,15 @@ const Navbar = () => {
 
       {/* شريط التنقل السفلي — جوال فقط */}
       <nav className="bottom-nav">
-        <Link href="/add" className={pathname === "/add" ? " active" : ""}>
-          
-          <span className="bottom-nav-label">إضافة العوائل</span>
-        </Link>
         <Link href="/view" className={pathname === "/view" ? " active" : ""}>
           
           <span className="bottom-nav-label">عرض العوائل</span>
         </Link>
+        <Link href="/add" className={pathname === "/add" ? " active" : ""}>
+          
+          <span className="bottom-nav-label">إضافة العوائل</span>
+        </Link>
+        
       </nav>
 
       {confirmLogout && (

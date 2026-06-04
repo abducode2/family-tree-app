@@ -1,10 +1,16 @@
 'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import AuthPage from '@/components/AuthPage';
-import HomePage from '@/components/HomePage';
 
 export default function Page() {
   const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) router.replace('/view');
+  }, [user, loading]);
 
   if (loading) {
     return (
@@ -15,9 +21,7 @@ export default function Page() {
     );
   }
 
-  return user ? 
-  
-  <HomePage /> 
- 
-  : <AuthPage />;
+  if (user) return null;
+
+  return <AuthPage />;
 }
