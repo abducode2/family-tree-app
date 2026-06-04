@@ -16,15 +16,12 @@
   white-space: nowrap;
 }
 
-.nav-desktop a:hover {
-  background: #3f3f3e;
-  color: #fff;
-}
-
 .nav-desktop a.active {
   transform: scale(0.96);
-  background: var(--gold);
-  color: white;
+  color: var(--gold-light);
+  font-size: 14px;
+  font-weight: bold;
+  border-bottom: 1px solid var(--gold-light);
 }
 
 /* ── شريط التنقل السفلي (جوال) ── */
@@ -49,12 +46,14 @@
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
     direction: rtl;
   }
+
 .bottom-nav a.active {
   transform: scale(0.96);
-  font-weight: 900;
-  color: var(--gold);
+  color: var(--gold-light);
+  font-size: 14px;
+  font-weight: bold;
+  border-bottom: 1px solid var(--gold-light);
 }
-
 
 
  .bottom-nav a {

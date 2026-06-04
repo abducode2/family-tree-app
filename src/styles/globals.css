@@ -103,13 +103,15 @@ body::before {
   background: var(--terracotta);
   color: white;
 }
-
+ 
 .btn-ghost {
   background: transparent;
   color: var(--ink);
   border-color: var(--border);
 }
-.btn-ghost:hover:not(:disabled) { background: var(--parchment-dark); }
+.btn-ghost:hover { 
+  background: var(--gold-light);
+ } 
 
 .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.78rem; }
 .btn-lg { padding: 0.75rem 1.5rem; font-size: 1rem; }

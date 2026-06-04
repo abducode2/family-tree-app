@@ -30,10 +30,6 @@
   letter-spacing: 0.02em;
 }
 
-/* .navbar-brand  {
-  font-size: 1.8rem;
-} */
-
 .navbar-actions {
   display: flex;
   align-items: center;
@@ -48,10 +44,10 @@
   border-radius: 20px;
   border: 1px solid rgba(255,255,255,0.15);
 }
-.navbar-actions .btn-ghost{
+ .navbar-actions .btn-ghost{
 color: #ffffff;
 border-color: #ffffff33
-}
+} 
 
 /* ── الصفحة الرئيسية ── */
 .main-layout {
@@ -229,9 +225,12 @@ border-color: #ffffff33
 
 .family-card-head {
   font-family: 'Scheherazade New', serif;
-  /* font-size: 1.3rem;
-  font-weight: 700; */
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+  align-items: center;
   color: var(--cobalt);
+  
   
 }
 
