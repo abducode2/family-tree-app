@@ -5,7 +5,7 @@ import { PersonPage, Person } from '@/types';
 import {
   addWife, updateWife, removeWife,
   addChild, updateChild, removeChild,
-  createChildPage, updatePageName, deletePageCascade,
+  createChildPage, updatePageName, updatePageNameEverywhere, deletePageCascade,
   syncHusbandOnWifePage,
   syncWifeOnHusbandPage,
   syncChildOnMotherPage,
@@ -49,10 +49,20 @@ export default function PersonPageView({
   const daughters = page.children.filter(c => c.gender === 'female');
 
   // ── زوجات ──
-  const handleSaveWife = async (wife: Person) => {
+  const handleSaveWife = async (wife: Person, parentPageId?: string, childId?: string) => {
     try {
+      // إذا كان الشخص بدون صفحة ومحدد من القائمة — أنشئ صفحته أولاً
+      if (!wife.linkedPersonId && parentPageId && childId) {
+        const parentPage = allPages.find(p => p.id === parentPageId);
+        const child = parentPage?.children.find(c => c.id === childId);
+        if (parentPage && child) {
+          const newPageId = await createChildPage(child, currentUserId, parentPageId, parentPage);
+          wife = { ...wife, linkedPersonId: newPageId };
+        }
+      }
+
       if (wifeModal.wife) await updateWife(page.id, wife, page);
-      else                await addWife(page.id, wife, page);
+      else                await addWife(page.id, wife);
 
       if (!wifeModal.wife && wife.linkedPersonId) {
         if (page.gender === 'female') {
@@ -74,18 +84,25 @@ export default function PersonPageView({
     try {
       await removeWife(page.id, w.id, page);
 
-      // حذف الزوج من صفحتها الخاصة
+      // حذف الزوج/الزوجة من صفحته/ها الخاصة
       if (w.linkedPersonId) {
-        await syncHusbandOnWifePage(page.id, page.name, w.linkedPersonId, 'remove');
+        if (page.gender === 'female') {
+          await syncWifeOnHusbandPage(page.id, page.name, w.linkedPersonId, 'remove');
+        } else {
+          await syncHusbandOnWifePage(page.id, page.name, w.linkedPersonId, 'remove');
+        }
       }
 
-      // حذف أبناء وبنات هذه الأم
+      // حذف أبناء وبنات هذه الأم/الأب من الصفحة الحالية
       const removed = await removeChildrenByMother(page.id, w.id, page);
 
-      // مزامنة الحذف في صفحة الأم (إن كان لها صفحة)
-      if (w.linkedPersonId) {
-        for (const child of removed) {
+      // مزامنة الحذف في صفحة الطرف الآخر + حذف صفحات الأبناء cascade
+      for (const child of removed) {
+        if (w.linkedPersonId) {
           await syncChildOnMotherPage(w.linkedPersonId, child, 'remove');
+        }
+        if (child.linkedPersonId) {
+          await deletePageCascade(child.linkedPersonId, currentUserId);
         }
       }
 
@@ -143,6 +160,11 @@ export default function PersonPageView({
         await syncChildOnMotherPage(motherWife.linkedPersonId, c, 'remove');
       }
 
+      // حذف صفحة الابن/البنت وجميع أحفادهم من قاعدة البيانات
+      if (c.linkedPersonId) {
+        await deletePageCascade(c.linkedPersonId, currentUserId);
+      }
+
       showToast('تم الحذف', 'success');
       setConfirmChild(null); onRefresh();
     } catch (e) { console.error('removeChild error:', e); showToast('حدث خطأ', 'error'); }
@@ -162,11 +184,11 @@ export default function PersonPageView({
     } catch { showToast('حدث خطأ', 'error'); }
   };
 
-  // ── تعديل الاسم ──
+  // ── تعديل الاسم في كل قواعد البيانات ──
   const handleSaveName = async () => {
     if (!newName.trim()) return;
     try {
-      await updatePageName(page.id, newName.trim());
+      await updatePageNameEverywhere(page.id, newName.trim(), currentUserId);
       showToast('تم التعديل', 'success');
       setEditingName(false); onRefresh();
     } catch { showToast('حدث خطأ', 'error'); }

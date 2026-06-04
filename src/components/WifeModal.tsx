@@ -3,42 +3,55 @@
 import { useState, useEffect, useRef } from 'react';
 import { Person, PersonPage } from '@/types';
 
+type PersonEntry = { name: string; id: string; pageId: string; sourceLabel: string; parentPageId: string };
+
 interface WifeModalProps {
   initial?: Person | null;
   allPages: PersonPage[];
   pageGender?: 'male' | 'female';
-  onSave: (wife: Person) => void;
+  onSave: (wife: Person, parentPageId?: string, childId?: string) => void;
   onClose: () => void;
 }
 
 export default function WifeModal({ initial, allPages, pageGender = 'male', onSave, onClose }: WifeModalProps) {
   const [inputValue,     setInputValue]     = useState(initial?.name ?? '');
   const [showDropdown,   setShowDropdown]   = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState<{ name: string; id: string; pageId: string; sourceLabel: string } | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<PersonEntry | null>(null);
   const [divorced,       setDivorced]       = useState(initial?.divorced ?? false);
   const dropRef = useRef<HTMLDivElement>(null);
 
   const targetGender = pageGender === 'female' ? 'male' : 'female';
 
-  // جمع الأشخاص المسجلين
+  // جمع الأشخاص مع حفظ معرّف الصفحة الأم
   const seenPageIds = new Set<string>();
-  const allPersons: { name: string; id: string; pageId: string; sourceLabel: string }[] = [];
+  const allPersons: PersonEntry[] = [];
+
   for (const p of allPages) {
-    for (const c of p.children)
+    for (const c of p.children) {
       if (c.gender === targetGender) {
         if (c.linkedPersonId) seenPageIds.add(c.linkedPersonId);
-        allPersons.push({ name: c.name, id: c.id, pageId: c.linkedPersonId ?? '', sourceLabel: p.name });
+        allPersons.push({ name: c.name, id: c.id, pageId: c.linkedPersonId ?? '', sourceLabel: p.name, parentPageId: p.id });
       }
+    }
   }
   for (const p of allPages) {
     if (p.gender === targetGender && !seenPageIds.has(p.id))
-      allPersons.push({ name: p.name, id: p.id, pageId: p.id, sourceLabel: 'صفحة مستقلة' });
+      allPersons.push({ name: p.name, id: p.id, pageId: p.id, sourceLabel: 'صفحة مستقلة', parentPageId: '' });
   }
 
-  const uniquePersons = allPersons.reduce<typeof allPersons>((acc, w) => {
-    const idx = acc.findIndex(x => x.id === w.id);
-    if (idx === -1) { acc.push(w); }
-    else if (!acc[idx].pageId && w.pageId) { acc[idx] = w; }
+  // إزالة التكرار: الأولوية للنسخة التي لها صفحة
+  const uniquePersons = allPersons.reduce<PersonEntry[]>((acc, w) => {
+    const byId = acc.findIndex(x => x.id === w.id);
+    if (byId !== -1) {
+      if (!acc[byId].pageId && w.pageId) acc[byId] = w;
+      return acc;
+    }
+    const byName = acc.findIndex(x => x.name === w.name);
+    if (byName !== -1) {
+      if (!acc[byName].pageId && w.pageId) acc[byName] = w;
+      return acc;
+    }
+    acc.push(w);
     return acc;
   }, []);
 
@@ -55,7 +68,7 @@ export default function WifeModal({ initial, allPages, pageGender = 'male', onSa
     return () => document.removeEventListener('mousedown', h);
   }, []);
 
-  const handleSelect = (w: { name: string; id: string; pageId: string; sourceLabel: string }) => {
+  const handleSelect = (w: PersonEntry) => {
     setSelectedPerson(w);
     setInputValue(w.name);
     setShowDropdown(false);
@@ -70,17 +83,29 @@ export default function WifeModal({ initial, allPages, pageGender = 'male', onSa
   const handleSave = () => {
     const name = inputValue.trim();
     if (!name) return;
-    onSave({
-      id: initial?.id ?? Math.random().toString(36).slice(2),
-      name,
-      gender: targetGender,
-      linkedPersonId: selectedPerson?.pageId || undefined,
-      divorced: divorced || undefined,
-    });
+
+    const pageId = selectedPerson?.pageId || '';
+
+    // إذا كان مختاراً من القائمة لكن بدون صفحة — نمرّر معلومات لإنشاء صفحته
+    const parentPageId = (!pageId && selectedPerson?.parentPageId) ? selectedPerson.parentPageId : undefined;
+    const childId      = (!pageId && selectedPerson?.id)           ? selectedPerson.id           : undefined;
+
+    onSave(
+      {
+        id: initial?.id ?? Math.random().toString(36).slice(2),
+        name,
+        gender: targetGender,
+        linkedPersonId: pageId || undefined,
+        divorced: divorced || undefined,
+      },
+      parentPageId,
+      childId
+    );
   };
 
-  const isLinked = !!selectedPerson?.pageId;
-  const label = pageGender === 'female' ? 'اسم الزوج' : 'اسم الزوجة';
+  const isLinked    = !!selectedPerson?.pageId;
+  const isSelected  = !!selectedPerson && !isLinked;
+  const label       = pageGender === 'female' ? 'اسم الزوج' : 'اسم الزوجة';
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -95,19 +120,22 @@ export default function WifeModal({ initial, allPages, pageGender = 'male', onSa
         <div className="form-group" ref={dropRef} style={{ position: 'relative' }}>
           <label className="form-label">{label} *</label>
 
-          {isLinked ? (
+          {(isLinked || isSelected) ? (
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '0.65rem 0.9rem',
-              background: pageGender === 'female' ? 'var(--male-bg)' : 'var(--female-bg)',
-              border: `2px solid ${pageGender === 'female' ? 'var(--male-border)' : 'var(--female-border)'}`,
+              background: isLinked
+                ? (pageGender === 'female' ? 'var(--male-bg)' : 'var(--female-bg)')
+                : 'var(--gold-pale)',
+              border: `2px solid ${isLinked
+                ? (pageGender === 'female' ? 'var(--male-border)' : 'var(--female-border)')
+                : 'var(--gold)'}`,
               borderRadius: '8px',
             }}>
               <div>
                 <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{selectedPerson!.name}</div>
-                <div style={{ fontSize: '0.75rem', opacity: 0.65 }}>{selectedPerson!.sourceLabel}</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--sage)', marginTop: '0.1rem' }}>
-                  ✓ مسجل — سيُضاف الربط تلقائياً
+                <div style={{ fontSize: '0.72rem', marginTop: '0.1rem', color: isLinked ? 'var(--sage)' : 'var(--gold)' }}>
+                  {isLinked ? '✓ له صفحة — سيُضاف الربط تلقائياً' : '📄 سيتم إنشاء صفحته عند الحفظ'}
                 </div>
               </div>
               <button className="btn btn-sm btn-ghost"
@@ -137,7 +165,10 @@ export default function WifeModal({ initial, allPages, pageGender = 'male', onSa
                         <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{w.name}</div>
                         <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>
                           {w.sourceLabel}
-                          {w.pageId && <span style={{ color: 'var(--sage)', marginRight: '0.3rem' }}> · له صفحة</span>}
+                          {w.pageId
+                            ? <span style={{ color: 'var(--sage)', marginRight: '0.3rem' }}> · له صفحة</span>
+                            : <span style={{ color: 'var(--gold)', marginRight: '0.3rem' }}> · سيُنشأ تلقائياً</span>
+                          }
                         </div>
                       </div>
                     </div>

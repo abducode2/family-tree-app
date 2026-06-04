@@ -100,9 +100,64 @@ export async function createChildPage(
   return ref.id;
 }
 
-// ── تحديث اسم رأس الصفحة ──
+// ── تحديث اسم الصفحة في كل قواعد البيانات ──
 export async function updatePageName(pageId: string, name: string): Promise<void> {
   await updateDoc(doc(db, PAGES, pageId), { name });
+}
+
+export async function updatePageNameEverywhere(
+  pageId: string,
+  newName: string,
+  uid: string
+): Promise<void> {
+  // 1. تحديث اسم الصفحة نفسها
+  await updateDoc(doc(db, PAGES, pageId), { name: newName });
+
+  const allPages = await getUserPages(uid);
+
+  for (const p of allPages) {
+    if (p.id === pageId) continue;
+
+    let childrenChanged = false;
+    let wivesChanged    = false;
+
+    // 2. تحديث الاسم في قائمة children (linkedPersonId يشير لهذه الصفحة)
+    let updatedChildren = (p.children ?? []).map(c => {
+      if (c.linkedPersonId === pageId) {
+        childrenChanged = true;
+        return clean({ ...c, name: newName });
+      }
+      return c;
+    });
+
+    // 3. تحديث motherName في الأبناء (عندما تكون هذه الصفحة هي الأم)
+    const wifeEntry = (p.wives ?? []).find(w => w.linkedPersonId === pageId);
+    if (wifeEntry) {
+      updatedChildren = updatedChildren.map(c => {
+        if (c.motherId === wifeEntry.id) {
+          childrenChanged = true;
+          return clean({ ...c, motherName: newName });
+        }
+        return c;
+      });
+    }
+
+    // 4. تحديث الاسم في قائمة wives (linkedPersonId يشير لهذه الصفحة)
+    const updatedWives = (p.wives ?? []).map(w => {
+      if (w.linkedPersonId === pageId) {
+        wivesChanged = true;
+        return clean({ ...w, name: newName });
+      }
+      return w;
+    });
+
+    if (childrenChanged || wivesChanged) {
+      await updateDoc(doc(db, PAGES, p.id), {
+        ...(childrenChanged ? { children: updatedChildren } : {}),
+        ...(wivesChanged    ? { wives: updatedWives }    : {}),
+      });
+    }
+  }
 }
 
 // ── مساعد: تنظيف كائن من undefined قبل الإرسال لـ Firestore ──
@@ -110,10 +165,30 @@ function clean<T extends object>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
-// ── إضافة / تعديل / حذف زوجة ──
-export async function addWife(pageId: string, wife: Person, page: PersonPage): Promise<void> {
-  const wives = [...(page.wives ?? []), wife].map(clean);
-  await updateDoc(doc(db, PAGES, pageId), { wives });
+// ── إضافة / تعديل / حذف زوجة/زوج ──
+export async function addWife(pageId: string, wife: Person): Promise<void> {
+  const freshPage = await getPage(pageId);
+  if (!freshPage) return;
+  const current = freshPage.wives ?? [];
+
+  // موجود مسبقاً بنفس الربط — تجاهل
+  if (wife.linkedPersonId && current.some(w => w.linkedPersonId === wife.linkedPersonId)) return;
+
+  // يوجد نسخة بنفس الاسم والجنس لكن بدون ربط — حدّثها بدلاً من إضافة جديد
+  if (wife.linkedPersonId) {
+    const unlinked = current.find(w => !w.linkedPersonId && w.name === wife.name && w.gender === wife.gender);
+    if (unlinked) {
+      const wives = current.map(w => w.id === unlinked.id ? clean({ ...w, linkedPersonId: wife.linkedPersonId }) : w);
+      await updateDoc(doc(db, PAGES, pageId), { wives });
+      return;
+    }
+  }
+
+  // إضافة يدوية بدون ربط — تجاهل التكرار بالاسم والجنس
+  if (!wife.linkedPersonId && current.some(w => w.name === wife.name && w.gender === wife.gender)) return;
+
+  // شخص جديد — أضف
+  await updateDoc(doc(db, PAGES, pageId), { wives: [...current, clean(wife)] });
 }
 export async function updateWife(pageId: string, wife: Person, page: PersonPage): Promise<void> {
   const wives = (page.wives ?? []).map(w => w.id === wife.id ? wife : w).map(clean);
@@ -335,24 +410,19 @@ export async function syncHusbandOnWifePage(
   wifeOwnPageId: string,
   action: 'add' | 'remove'
 ): Promise<void> {
-  const wifePage = await getPage(wifeOwnPageId);
-  if (!wifePage) return;
-
   if (action === 'add') {
-    const alreadyLinked = (wifePage.wives ?? []).some(w => w.linkedPersonId === husbandPageId);
-    if (alreadyLinked) return;
-    const entry: Person = clean({
+    // addWife تقرأ أحدث نسخة وتتحقق من التكرار تلقائياً
+    await addWife(wifeOwnPageId, clean({
       id: Math.random().toString(36).slice(2),
       name: husbandName,
       gender: 'male' as const,
       linkedPersonId: husbandPageId,
-    });
-    await updateDoc(doc(db, PAGES, wifeOwnPageId), {
-      wives: [...(wifePage.wives ?? []), entry].map(clean),
-    });
+    }));
   } else {
+    const page = await getPage(wifeOwnPageId);
+    if (!page) return;
     await updateDoc(doc(db, PAGES, wifeOwnPageId), {
-      wives: (wifePage.wives ?? []).filter(w => w.linkedPersonId !== husbandPageId).map(clean),
+      wives: (page.wives ?? []).filter(w => w.linkedPersonId !== husbandPageId).map(clean),
     });
   }
 }
@@ -364,24 +434,19 @@ export async function syncWifeOnHusbandPage(
   husbandOwnPageId: string,
   action: 'add' | 'remove'
 ): Promise<void> {
-  const husbandPage = await getPage(husbandOwnPageId);
-  if (!husbandPage) return;
-
   if (action === 'add') {
-    const alreadyLinked = (husbandPage.wives ?? []).some(w => w.linkedPersonId === wifePageId);
-    if (alreadyLinked) return;
-    const entry: Person = clean({
+    // addWife تقرأ أحدث نسخة وتتحقق من التكرار تلقائياً
+    await addWife(husbandOwnPageId, clean({
       id: Math.random().toString(36).slice(2),
       name: wifeName,
       gender: 'female' as const,
       linkedPersonId: wifePageId,
-    });
-    await updateDoc(doc(db, PAGES, husbandOwnPageId), {
-      wives: [...(husbandPage.wives ?? []), entry].map(clean),
-    });
+    }));
   } else {
+    const page = await getPage(husbandOwnPageId);
+    if (!page) return;
     await updateDoc(doc(db, PAGES, husbandOwnPageId), {
-      wives: (husbandPage.wives ?? []).filter(w => w.linkedPersonId !== wifePageId).map(clean),
+      wives: (page.wives ?? []).filter(w => w.linkedPersonId !== wifePageId).map(clean),
     });
   }
 }

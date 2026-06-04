@@ -205,17 +205,7 @@ export default function ViewPages({
                 <div className="person-info">
                   <div className="person-name">{d.name}</div>
                   {d.motherName && <div className="person-meta">الأم: {d.motherName}</div>}
-                  {/* {d.spouseName && (
-                    <div className="person-meta">
-                      الزوج: {d.spouseName}
-                      {d.spousePageId && (
-                        <button className="link-badge" style={{ fontSize: '0.68rem', marginRight: '0.3rem' }}
-                          onClick={e => { e.stopPropagation(); onNavigate(d.spousePageId!); }}>
-                          🔗 صفحته
-                        </button>
-                      )} 
-                    </div>
-                  )}*/}
+                  
                 </div>
               </div>
             ))
